@@ -141,6 +141,8 @@ if (DEFINED SPIRV_TOOLS_EXTRA_DEFINITIONS)
   add_definitions(${SPIRV_TOOLS_EXTRA_DEFINITIONS})
 endif()
 
+set(SPIRV_TOOLS_GENERATED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated)
+
 # Library build setting definitions:
 #
 # * SPIRV_TOOLS_BUILD_STATIC - ON or OFF - Defaults to ON.
@@ -243,6 +245,7 @@ if(NOT COMMAND find_host_program)
   endmacro()
 endif()
 
+if (NOT "${SPIRV_SKIP_TESTS}")
 # Tests require Python3
 find_host_package(Python3 REQUIRED)
 
@@ -259,6 +262,7 @@ add_custom_target(spirv-tools-check-python-tests
 	COMMAND Python3::Interpreter -m unittest discover -v -p "*test.py"
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/utils
 )
+endif()
 
 # Check for symbol exports on Linux.
 # At the moment, this check will fail on the OSX build machines for the Android NDK.
@@ -357,7 +361,9 @@ endif()
 add_subdirectory(source)
 add_subdirectory(tools)
 
+if (NOT "${SPIRV_SKIP_TESTS}")
 add_subdirectory(test)
+endif()
 add_subdirectory(examples)
 
 if(ENABLE_SPIRV_TOOLS_INSTALL)
@@ -406,8 +412,8 @@ add_custom_command(
                       -DSPIRV_SHARED_LIBRARIES=${SPIRV_SHARED_LIBRARIES}
                       -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/write_pkg_config.cmake
         DEPENDS "CHANGES" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/SPIRV-Tools-shared.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/cmake/write_pkg_config.cmake")
-add_custom_target(spirv-tools-pkg-config 
-        ALL 
+add_custom_target(spirv-tools-pkg-config
+        ALL
         DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/SPIRV-Tools-shared.pc ${CMAKE_CURRENT_BINARY_DIR}/SPIRV-Tools.pc)
 
 # Install pkg-config file

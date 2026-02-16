@@ -34,6 +34,7 @@ set(EI_ns_vkspreflect "${GRAMMAR_DIR}/extinst.nonsemantic.vkspreflection.grammar
 set(EI_tosa_001000_1 "${GRAMMAR_DIR}/extinst.tosa.001000.1.grammar.json")
 set(EI_arm_motion_engine_100 "${GRAMMAR_DIR}/extinst.arm.motion-engine.100.grammar.json")
 
+if(0)
 set(CORE_TABLES_BODY_INC_FILE ${spirv-tools_BINARY_DIR}/core_tables_body.inc)
 set(CORE_TABLES_HEADER_INC_FILE ${spirv-tools_BINARY_DIR}/core_tables_header.inc)
 add_custom_command(OUTPUT ${CORE_TABLES_BODY_INC_FILE} ${CORE_TABLES_HEADER_INC_FILE}
@@ -71,6 +72,8 @@ add_custom_command(OUTPUT ${CORE_TABLES_BODY_INC_FILE} ${CORE_TABLES_HEADER_INC_
 	    ${EI_arm_motion_engine_100}
     COMMENT "Generate grammar tables")
 add_custom_target(spirv-tools-tables DEPENDS ${CORE_TABLES_BODY_INC_FILE} ${CORE_TABLES_HEADER_INC_FILE})
+endif()
+add_custom_target(spirv-tools-tables)
 
 macro(spvtools_vimsyntax CONFIG_VERSION CLVERSION)
   set(GRAMMAR_JSON_FILE "${SPIRV_HEADER_INCLUDE_DIR}/spirv/${CONFIG_VERSION}/spirv.core.grammar.json")
@@ -102,16 +105,18 @@ macro(spvtools_extinst_lang_headers NAME GRAMMAR_FILE)
   list(APPEND EXTINST_CPP_DEPENDS spirv-tools-header-${NAME})
 endmacro(spvtools_extinst_lang_headers)
 
-spvtools_extinst_lang_headers("DebugInfo" ${EI_debuginfo})
-spvtools_extinst_lang_headers("OpenCLDebugInfo100" ${EI_cldebuginfo})
-spvtools_extinst_lang_headers("NonSemanticShaderDebugInfo100" ${EI_ns_debuginfo})
+# spvtools_extinst_lang_headers("DebugInfo" ${EI_debuginfo})
+# spvtools_extinst_lang_headers("OpenCLDebugInfo100" ${EI_cldebuginfo})
+# spvtools_extinst_lang_headers("NonSemanticShaderDebugInfo100" ${EI_ns_debuginfo})
 
-spvtools_vimsyntax("unified1" "1.0")
+# spvtools_vimsyntax("unified1" "1.0")
+set(VIMSYNTAX_FILE "${spirv-tools_SOURCE_DIR}/spvasm.vim")
 add_custom_target(spirv-tools-vimsyntax DEPENDS ${VIMSYNTAX_FILE})
 set_property(TARGET spirv-tools-vimsyntax PROPERTY FOLDER "SPIRV-Tools utilities")
 
 # Extract the list of known generators from the SPIR-V XML registry file.
-set(GENERATOR_INC_FILE ${spirv-tools_BINARY_DIR}/generators.inc)
+set(GENERATOR_INC_FILE ${SPIRV_TOOLS_GENERATED_DIR}/generators.inc)
+if(0)
 set(SPIRV_XML_REGISTRY_FILE ${SPIRV_HEADER_INCLUDE_DIR}/spirv/spir-v.xml)
 add_custom_command(OUTPUT ${GENERATOR_INC_FILE}
   COMMAND Python3::Interpreter ${XML_REGISTRY_PROCESSING_SCRIPT}
@@ -120,6 +125,7 @@ add_custom_command(OUTPUT ${GENERATOR_INC_FILE}
   DEPENDS ${XML_REGISTRY_PROCESSING_SCRIPT} ${SPIRV_XML_REGISTRY_FILE}
   COMMENT "Generate tables based on the SPIR-V XML registry.")
 list(APPEND OPCODE_CPP_DEPENDS ${GENERATOR_INC_FILE})
+endif()
 
 # The following .cpp files include the above generated .inc files.
 # Add those .inc files as their dependencies.
@@ -137,7 +143,8 @@ set_source_files_properties(
   PROPERTIES HEADER_FILE_ONLY TRUE)
 
 set(SPIRV_TOOLS_BUILD_VERSION_INC
-  ${spirv-tools_BINARY_DIR}/build-version.inc)
+  ${SPIRV_TOOLS_GENERATED_DIR}/build-version.inc)
+if(0)
 set(SPIRV_TOOLS_BUILD_VERSION_INC_GENERATOR
   ${spirv-tools_SOURCE_DIR}/utils/update_build_version.py)
 set(SPIRV_TOOLS_CHANGES_FILE
@@ -153,6 +160,8 @@ add_custom_command(OUTPUT ${SPIRV_TOOLS_BUILD_VERSION_INC}
 # This is not required for any dependence chain.
 add_custom_target(spirv-tools-build-version
    DEPENDS ${SPIRV_TOOLS_BUILD_VERSION_INC})
+endif()
+add_custom_target(spirv-tools-build-version)
 set_property(TARGET spirv-tools-build-version PROPERTY FOLDER "SPIRV-Tools build")
 
 list(APPEND PCH_DEPENDS
@@ -332,7 +341,7 @@ function(spirv_tools_default_target_options target)
     PUBLIC
       $<BUILD_INTERFACE:${spirv-tools_SOURCE_DIR}/include>
       $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-    PRIVATE ${spirv-tools_BINARY_DIR}
+    PRIVATE ${SPIRV_TOOLS_GENERATED_DIR}
     PRIVATE ${SPIRV_HEADER_INCLUDE_DIR}
   )
   set_property(TARGET ${target} PROPERTY FOLDER "SPIRV-Tools libraries")

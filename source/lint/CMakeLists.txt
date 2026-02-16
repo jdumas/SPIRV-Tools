@@ -28,7 +28,7 @@ target_include_directories(SPIRV-Tools-lint
 	$<BUILD_INTERFACE:${spirv-tools_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${SPIRV_HEADER_INCLUDE_DIR}>
 	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  PRIVATE ${spirv-tools_BINARY_DIR}
+  PRIVATE ${SPIRV_TOOLS_GENERATED_DIR}
 )
 # We need the assembling and disassembling functionalities in the main library.
 target_link_libraries(SPIRV-Tools-lint

@@ -43,7 +43,7 @@ function(add_spvtools_tool)
   target_link_libraries(${ARG_TARGET} PRIVATE ${ARG_LIBS})
   target_include_directories(${ARG_TARGET} PRIVATE
     ${spirv-tools_SOURCE_DIR}
-    ${spirv-tools_BINARY_DIR}
+    ${SPIRV_TOOLS_GENERATED_DIR}
   )
   set_property(TARGET ${ARG_TARGET} PROPERTY FOLDER "SPIRV-Tools executables")
 endfunction()
